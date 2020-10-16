@@ -1,0 +1,132 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="getAccounts">
+    <!-- CREATE ATTRIBUTE/VARIABLE-->
+    <aura:attribute name="searchResult" type="List" description="use for store and display account list return from server"/>
+    <aura:attribute name="searchKeyword" type="String" description="use for store user search input"/>
+    <aura:attribute name="Message" type="boolean" default="false" description="use for display no record found message"/>
+    <aura:attribute name="TotalNumberOfRecord" type="integer" default="0" description="use for display Number of records"/>
+    <aura:attribute name="accountId" type="String" description="Account Id"/>
+    <aura:attribute name="bLatitude" type="Decimal" description="bLatitude"/>
+    <aura:attribute name="bLongitude" type="Decimal" description="bLongitude"/>
+    <aura:attribute name="distance" type="Decimal" description="distance"/>
+    <aura:attribute name="Distancia" type="String" description="Distancia"/>
+
+    
+    
+    <!-- SHOW LOADING SPINNER--> 
+    <lightning:spinner variant="brand" size="large" aura:id="Id_spinner" class="slds-hide" />
+    <br />
+    <div class="slds-text-heading_large" align="center">Comparativo de distancia</div>
+    <div class="slds-m-around_medium">
+       <!-- SEARCH INPUT AND SEARCH BUTTON--> 
+        <lightning:layout>
+            <lightning:layoutItem size="3" padding="around-small">
+                <lightning:input value="{!v.searchKeyword}"
+                                 required="true"
+                                 placeholder="buscando cuentas.."
+                                 aura:id="searchField"
+                                 label="Nombre de la cuenta"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="2" padding="around-small">
+                <lightning:button onclick="{!c.Search}"
+                                  variant="brand"
+                                  label="Buscar"
+                                  iconName="utility:search"/> 
+            </lightning:layoutItem>
+        </lightning:layout>
+        
+    	<br /><h5><b>Seleccione la cuenta a comparar:</b></h5><br />
+        <!-- TOTAL RECORDS BADGES--> 
+        <div class="slds-m-around_x-small">
+            <lightning:badge label="{!v.TotalNumberOfRecord}" />
+        </div>
+        
+        <!-- ERROR MESSAGE IF NOT RECORDS FOUND--> 
+        <aura:if isTrue="{!v.Message}">
+            <div class="slds-notify_container slds-is-relative">
+                <div class="slds-notify slds-notify_toast slds-theme_error" role="alert">
+                    <div class="slds-notify__content">
+                        <h2 class="slds-text-heading_small">Registro no encontrado...</h2>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+       
+        <!-- TABLE CONTENT--> 
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+            <thead>
+                <tr class="slds-text-title_caps">
+                    <th scope="col">
+                        <div class="slds-truncate" title="S.no">S.no</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Account Name">Cuenta</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Type">Tipo</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Industry">Industria</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Phone">Teléfono</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Fax">Fax</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Seleccion">Selección</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody> 
+                <!--### display all records of searchResult attribute by aura:iteration ###-->
+                <aura:iteration items="{!v.searchResult}" var="acc" indexVar="count">
+                    <tr>
+                        <td>
+                            <div class="slds-truncate">{!count + 1}</div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">{!acc.Name}</div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">{!acc.Type}</div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">{!acc.Industry}</div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">{!acc.Phone}</div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">{!acc.Fax}</div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate"><button type="button" label="Seleccionar" title="Seleccionar" onclick="{! c.handleClick }" data-cmd="submit" data-id="{!acc.Id}">Seleccionar</button></div>
+                        </td>
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+    </div>
+    <h6><div class="slds-m-around_medium"><b>{!v.Distancia}</b></div></h6> <br />
+    
+    <!-- attributes -->
+    <aura:attribute name="latitude" type="Decimal"/>
+    <aura:attribute name="longitude" type="Decimal"/>
+    
+ 	<aura:attribute name="currentLatitude" type="Decimal"/>
+    <aura:attribute name="currentLongitude" type="Decimal"/>
+    
+    <aura:attribute name="mapMarkers" type="Object"/>
+    <aura:attribute name="zoomLevel" type="Integer" />
+    
+    <!-- handlers-->
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    
+    <!-- the map component -->
+    <lightning:map 
+                   mapMarkers="{! v.mapMarkers }" 
+                   zoomLevel="{!v.zoomLevel}" />
+    
+
+</aura:component>
